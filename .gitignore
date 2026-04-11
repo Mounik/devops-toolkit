@@ -1,0 +1,6 @@
+.env
+*.log
+*.sql
+*.sql.gz
+*.tar.gz
+inventory.ini

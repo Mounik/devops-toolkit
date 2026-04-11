@@ -1,0 +1,24 @@
+---
+# Auditd setup for system auditing
+
+- name: Install auditd
+  ansible.builtin.apt:
+    name:
+      - auditd
+      - audispd-plugins
+    state: present
+
+- name: Deploy auditd rules
+  ansible.builtin.template:
+    src: audit.rules.j2
+    dest: /etc/audit/rules.d/audit.rules
+    owner: root
+    group: root
+    mode: "0640"
+  notify: Restart auditd
+
+- name: Ensure auditd is running and enabled
+  ansible.builtin.service:
+    name: auditd
+    state: started
+    enabled: true

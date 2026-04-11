@@ -1,0 +1,48 @@
+---
+# Automatic security updates with unattended-upgrades
+
+- name: Install unattended-upgrades
+  ansible.builtin.apt:
+    name:
+      - unattended-upgrades
+      - apt-listchanges
+    state: present
+
+- name: Configure unattended-upgrades
+  ansible.builtin.copy:
+    dest: /etc/apt/apt.conf.d/50unattended-upgrades
+    content: |
+      Unattended-Upgrade::Allowed-Origins {
+          "${distro_id}:${distro_codename}-security";
+          "${distro_id}ESMApps:${distro_codename}-esm-apps-security";
+          "${distro_id}ESMInfrastructure:${distro_codename}-esm-infra-security";
+      };
+      Unattended-Upgrade::AutoFixInterruptedDpkg "true";
+      Unattended-Upgrade::Remove-Unused-Dependencies "true";
+      Unattended-Upgrade::Remove-New-Unused-Dependencies "true";
+      Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
+      Unattended-Upgrade::Automatic-Reboot "{{ auto_updates_reboot }}";
+      Unattended-Upgrade::Automatic-Reboot-Time "{{ auto_updates_reboot_time }}";
+      Unattended-Upgrade::SyslogEnable "true";
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart unattended-upgrades
+
+- name: Enable automatic updates
+  ansible.builtin.copy:
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    content: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Unattended-Upgrade "1";
+      APT::Periodic::Download-Upgradeable-Packages "1";
+      APT::Periodic::AutocleanInterval "7";
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Ensure unattended-upgrades service is running
+  ansible.builtin.service:
+    name: unattended-upgrades
+    state: started
+    enabled: true

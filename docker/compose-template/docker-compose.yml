@@ -1,0 +1,61 @@
+# Docker Compose Template — Best Practices
+
+version: "3.8"
+
+services:
+  app:
+    image: app:latest
+    container_name: app
+    restart: unless-stopped
+    # Security hardening
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE  # only if needed
+    read_only: true
+    tmpfs:
+      - /tmp
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    # Logging
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # Environment
+    environment:
+      - TZ=Europe/Paris
+    env_file:
+      - .env
+    # Volumes
+    volumes:
+      - app_data:/data
+    # Networks
+    networks:
+      - frontend
+      - backend
+
+volumes:
+  app_data:
+
+networks:
+  frontend:
+  backend:
+    internal: true

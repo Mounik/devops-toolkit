@@ -1,0 +1,33 @@
+---
+# User management tasks
+
+- name: Create deploy user
+  ansible.builtin.user:
+    name: "{{ deploy_user | default('deploy') }}"
+    shell: /bin/bash
+    groups: sudo
+    append: true
+    create_home: true
+
+- name: Set up SSH authorized keys for deploy user
+  ansible.posix.authorized_key:
+    user: "{{ deploy_user | default('deploy') }}"
+    key: "{{ item }}"
+    state: present
+  loop: "{{ deploy_ssh_keys | default([]) }}"
+
+- name: Allow deploy user to sudo without password
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/{{ deploy_user | default('deploy') }}"
+    content: "{{ deploy_user | default('deploy') }} ALL=(ALL) NOPASSWD:ALL"
+    owner: root
+    group: root
+    mode: "0440"
+    validate: "visudo -cf %s"
+
+- name: Remove default user if requested
+  ansible.builtin.user:
+    name: "{{ remove_default_user | default(omit) }}"
+    state: absent
+    remove: true
+  when: remove_default_user is defined

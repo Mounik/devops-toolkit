@@ -1,0 +1,60 @@
+name: Deploy with Ansible
+
+on:
+  workflow_dispatch:
+    inputs:
+      playbook:
+        description: 'Playbook to run'
+        required: true
+        type: choice
+        options:
+          - hardening
+          - docker-install
+          - monitoring-setup
+          - backup
+      limit:
+        description: 'Limit to host/group'
+        required: false
+        type: string
+      tags:
+        description: 'Run specific tags'
+        required: false
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Ansible
+        run: pip install ansible-core
+
+      - name: Install collections
+        run: |
+          ansible-galaxy collection install community.general
+          ansible-galaxy collection install ansible.posix
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ANSIBLE_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.ANSIBLE_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Build inventory
+        run: |
+          cat > inventory.ini <<EOF
+          [servers]
+          ${{ secrets.ANSIBLE_HOST }} ansible_user=${{ secrets.ANSIBLE_USER }}
+          EOF
+
+      - name: Run playbook
+        run: |
+          ARGS="-i inventory.ini"
+          [[ -n "${{ github.event.inputs.limit }}" ]] && ARGS+=" --limit ${{ github.event.inputs.limit }}"
+          [[ -n "${{ github.event.inputs.tags }}" ]] && ARGS+=" --tags ${{ github.event.inputs.tags }}"
+          ansible-playbook ansible/${{ github.event.inputs.playbook }}/main.yml $ARGS

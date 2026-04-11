@@ -1,0 +1,68 @@
+---
+# Automated backup with restic + cron
+
+- name: Setup Automated Backups
+  hosts: all
+  become: true
+  vars:
+    restic_version: "0.17.3"
+    restic_repo: ""
+    restic_password: ""
+    backup_paths:
+      - /etc
+      - /home
+      - /var/lib/docker/volumes
+    backup_cron_hour: "2"
+    backup_cron_minute: "0"
+    backup_retention_days: 30
+    backup_s3_endpoint: ""
+    backup_s3_bucket: ""
+  tasks:
+    - name: Install restic
+      ansible.builtin.apt:
+        name: restic
+        state: present
+      when: ansible_pkg_mgr == 'apt'
+
+    - name: Create restic config directory
+      ansible.builtin.file:
+        path: /etc/restic
+        state: directory
+        mode: "0700"
+
+    - name: Deploy restic password file
+      ansible.builtin.copy:
+        content: "{{ restic_password }}"
+        dest: /etc/restic/password
+        mode: "0600"
+      no_log: true
+
+    - name: Deploy restic environment file
+      ansible.builtin.template:
+        src: restic.env.j2
+        dest: /etc/restic/env
+        mode: "0600"
+      no_log: true
+
+    - name: Deploy backup script
+      ansible.builtin.template:
+        src: backup.sh.j2
+        dest: /usr/local/bin/restic-backup
+        mode: "0755"
+
+    - name: Initialize restic repository
+      ansible.builtin.command:
+        cmd: "restic init --repo {{ restic_repo }}"
+        environment:
+          RESTIC_PASSWORD_FILE: /etc/restic/password
+      register: restic_init
+      failed_when: restic_init.rc not in [0, 1]
+      changed_when: restic_init.rc == 0
+
+    - name: Schedule backup cron
+      ansible.builtin.cron:
+        name: "restic backup"
+        hour: "{{ backup_cron_hour }}"
+        minute: "{{ backup_cron_minute }}"
+        job: "/usr/local/bin/restic-backup >> /var/log/restic-backup.log 2>&1"
+        user: root

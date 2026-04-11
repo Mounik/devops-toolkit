@@ -1,0 +1,21 @@
+#!/bin/bash
+# restic-backup wrapper script
+set -euo pipefail
+
+source /etc/restic/env
+
+export RESTIC_PASSWORD_FILE=/etc/restic/password
+export RESTIC_REPOSITORY="{{ restic_repo }}"
+
+echo "=== Backup started: $(date) ==="
+
+# Create backup
+restic backup {{ backup_paths | join(' ') }} --tag automated
+
+# Prune old snapshots
+restic forget --keep-daily {{ backup_retention_days }} --keep-weekly 12 --keep-monthly 6 --prune
+
+# Check repository integrity
+restic check
+
+echo "=== Backup completed: $(date) ==="

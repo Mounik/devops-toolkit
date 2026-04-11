@@ -1,0 +1,33 @@
+---
+# Firewall Setup with UFW
+
+- name: Install UFW
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+
+- name: Set default incoming policy
+  community.general.ufw:
+    policy: "{{ ufw_default_incoming }}"
+    direction: incoming
+
+- name: Set default outgoing policy
+  community.general.ufw:
+    policy: "{{ ufw_default_outgoing }}"
+    direction: outgoing
+
+- name: Allow configured ports
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop: "{{ firewall_allowed_ports }}"
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+
+- name: Deny everything else
+  community.general.ufw:
+    rule: deny
+    direction: incoming

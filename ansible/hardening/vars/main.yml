@@ -1,0 +1,22 @@
+# SSH Hardening Variables
+sshd_config:
+  - key: PermitRootLogin
+    value: "{{ ssh_permit_root_login }}"
+  - key: PasswordAuthentication
+    value: "{{ ssh_password_authentication }}"
+  - key: PubkeyAuthentication
+    value: "{{ ssh_pubkey_authentication }}"
+  - key: MaxAuthTries
+    value: "{{ ssh_max_auth_tries }}"
+  - key: MaxSessions
+    value: "{{ ssh_max_sessions }}"
+  - key: ClientAliveInterval
+    value: "{{ ssh_client_alive_interval }}"
+  - key: ClientAliveCountMax
+    value: "{{ ssh_client_alive_count_max }}"
+  - key: LoginGraceTime
+    value: "60"
+  - key: AllowAgentForwarding
+    value: "no"
+  - key: AllowTcpForwarding
+    value: "no"

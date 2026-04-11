@@ -1,0 +1,53 @@
+# GitLab CI — Lint & Test for Shell, Ansible, and YAML
+
+stages:
+  - lint
+  - test
+
+variables:
+  ANSIBLE_VERSION: "2.16"
+
+shellcheck:
+  stage: lint
+  image: koalaman/shellcheck-alpine:latest
+  script:
+    - find scripts/ -name "*.sh" -exec shellcheck -x {} +
+  rules:
+    - changes:
+        - scripts/**/*
+
+ansible-lint:
+  stage: lint
+  image: python:${ANSIBLE_VERSION}-slim
+  before_script:
+    - pip install ansible-lint ansible-core
+    - ansible-galaxy collection install community.general ansible.posix
+  script:
+    - ansible-lint ansible/
+  rules:
+    - changes:
+        - ansible/**/*
+
+yamllint:
+  stage: lint
+  image: python:3.12-slim
+  before_script:
+    - pip install yamllint
+  script:
+    - yamllint -d relaxed ansible/ ci/
+  rules:
+    - changes:
+        - "**/*.yml"
+        - "**/*.yaml"
+
+ansible-syntax:
+  stage: test
+  image: python:${ANSIBLE_VERSION}-slim
+  before_script:
+    - pip install ansible-core
+    - ansible-galaxy collection install community.general ansible.posix
+  script:
+    - for pb in ansible/*/main.yml; do ansible-playbook --syntax-check "$pb"; done
+  rules:
+    - changes:
+        - ansible/**/*

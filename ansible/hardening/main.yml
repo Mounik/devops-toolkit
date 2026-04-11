@@ -1,0 +1,31 @@
+---
+# DevOps Toolkit - Ansible Hardening Playbook
+# Full Linux server hardening based on CIS Benchmarks
+# Tested on: Debian 12, Ubuntu 22.04/24.04
+
+- name: Harden Linux Server
+  hosts: all
+  become: true
+  vars_files:
+    - defaults/main.yml
+  tasks:
+    - name: Include SSH hardening
+      ansible.builtin.include_tasks: tasks/ssh.yml
+
+    - name: Include firewall setup
+      ansible.builtin.include_tasks: tasks/firewall.yml
+
+    - name: Include sysctl hardening
+      ansible.builtin.include_tasks: tasks/sysctl.yml
+
+    - name: Include auditd setup
+      ansible.builtin.include_tasks: tasks/auditd.yml
+
+    - name: Include fail2ban setup
+      ansible.builtin.include_tasks: tasks/fail2ban.yml
+
+    - name: Include automatic updates
+      ansible.builtin.include_tasks: tasks/auto-updates.yml
+
+    - name: Include user management
+      ansible.builtin.include_tasks: tasks/users.yml

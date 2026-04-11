@@ -1,0 +1,39 @@
+---
+# Default variables for hardening playbook
+
+# SSH Configuration
+ssh_port: 22
+ssh_permit_root_login: "no"
+ssh_password_authentication: "no"
+ssh_pubkey_authentication: "yes"
+ssh_max_auth_tries: 3
+ssh_max_sessions: 3
+ssh_client_alive_interval: 300
+ssh_client_alive_count_max: 2
+ssh_allow_users: []
+
+# Firewall
+firewall_allowed_ports:
+  - "22"     # SSH
+  - "80"     # HTTP
+  - "443"    # HTTPS
+
+# UFW defaults
+ufw_default_incoming: deny
+ufw_default_outgoing: allow
+
+# Fail2ban
+fail2ban_maxretry: 5
+fail2ban_findtime: 600
+fail2ban_bantime: 3600
+fail2ban_ssh_port: "{{ ssh_port }}"
+
+# Auto-updates
+auto_updates_reboot: "true"
+auto_updates_reboot_time: "03:00"
+
+# Sysctl
+sysctl_ipv4_forwarding: 0
+sysctl_icmp_redirects: 0
+sysctl_source_route: 0
+sysctl_log_martians: 1
