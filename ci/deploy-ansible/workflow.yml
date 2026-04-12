@@ -58,3 +58,7 @@ jobs:
           [[ -n "${{ github.event.inputs.limit }}" ]] && ARGS+=" --limit ${{ github.event.inputs.limit }}"
           [[ -n "${{ github.event.inputs.tags }}" ]] && ARGS+=" --tags ${{ github.event.inputs.tags }}"
           ansible-playbook ansible/${{ github.event.inputs.playbook }}/main.yml $ARGS
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f ~/.ssh/id_ed25519

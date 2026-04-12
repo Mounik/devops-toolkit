@@ -24,6 +24,7 @@
     group: root
     mode: "0440"
     validate: "visudo -cf %s"
+  when: deploy_sudo_nopasswd | default(false)
 
 - name: Remove default user if requested
   ansible.builtin.user:

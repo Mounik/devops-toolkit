@@ -18,6 +18,7 @@ err()  { echo -e "${RED}[-]${NC} $1"; exit 1; }
 # Parse args
 DEPLOY_USER="${1:-deploy}"
 SSH_KEY="${2:-}"
+TIMEZONE="${3:-${TZ:-Europe/Paris}}"
 
 # Root check
 [[ $EUID -ne 0 ]] && err "Run as root"
@@ -92,8 +93,8 @@ apt install -y unattended-upgrades apt-listchanges
 dpkg-reconfigure -plow unattended-upgrades
 
 # 9. Set timezone
-log "Setting timezone to Europe/Paris..."
-timedatectl set-timezone Europe/Paris
+log "Setting timezone to $TIMEZONE..."
+timedatectl set-timezone "$TIMEZONE"
 
 # 10. Enable BBR
 log "Enabling TCP BBR..."

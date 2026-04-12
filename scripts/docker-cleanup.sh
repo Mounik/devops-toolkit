@@ -15,6 +15,13 @@ warn() { echo -e "${YELLOW}[!]${NC} $1"; }
 # Check docker access
 docker info &>/dev/null || { echo "Docker not accessible"; exit 1; }
 
+AUTO_YES=false
+for arg in "$@"; do
+    case "$arg" in
+        -y|--yes) AUTO_YES=true ;;
+    esac
+done
+
 # Show before
 log "Current Docker disk usage:"
 docker system df
@@ -27,9 +34,11 @@ echo "  - Build cache"
 echo "  - Unused networks"
 echo "  - Dangling (unnamed) volumes"
 echo ""
-read -p "Continue? [y/N] " -n 1 -r
-echo ""
-[[ ! $REPLY =~ ^[Yy]$ ]] && { echo "Aborted"; exit 0; }
+if [[ "$AUTO_YES" != true ]]; then
+    read -p "Continue? [y/N] " -n 1 -r
+    echo ""
+    [[ ! $REPLY =~ ^[Yy]$ ]] && { echo "Aborted"; exit 0; }
+fi
 
 # Cleanup
 log "Removing stopped containers..."

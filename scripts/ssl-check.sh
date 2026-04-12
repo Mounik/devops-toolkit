@@ -13,7 +13,7 @@ check_cert() {
     local port=443
 
     local expiry
-    expiry=$(echo | openssl s_client -servername "$domain" -connect "$domain:$port" 2>/dev/null \
+    expiry=$(echo | openssl s_client -servername "$domain" -connect "$domain:$port" -connect_timeout 10 2>/dev/null \
         | openssl x509 -noout -enddate 2>/dev/null \
         | cut -d= -f2)
 

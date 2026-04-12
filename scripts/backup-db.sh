@@ -26,12 +26,12 @@ mkdir -p "$BACKUP_DIR"
 
 backup_postgres() {
     local dbs
-    dbs=$(psql -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -t -c "SELECT datname FROM pg_database WHERE datistemplate = false;" 2>/dev/null | sed 's/ //g')
+    dbs=$(PGPASSWORD="${PG_PASSWORD:-}" psql -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -t -c "SELECT datname FROM pg_database WHERE datistemplate = false;" 2>/dev/null | sed 's/ //g')
 
     for db in $dbs; do
         local file="${BACKUP_DIR}/${db}_${TIMESTAMP}.sql"
         log "Backing up PostgreSQL: $db"
-        pg_dump -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" "$db" > "$file"
+        PGPASSWORD="${PG_PASSWORD:-}" pg_dump -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" "$db" > "$file"
         [[ "$COMPRESS" == true ]] && gzip "$file"
         log "  → ${file}.gz"
     done
@@ -39,12 +39,12 @@ backup_postgres() {
 
 backup_mysql() {
     local dbs
-    dbs=$(mysql -h "$MYSQL_HOST" -P "$MYSQL_PORT" -u "$MYSQL_USER" -e "SHOW DATABASES;" -s 2>/dev/null | grep -v -E "Database|information_schema|performance_schema|sys")
+    dbs=$(MYSQL_PWD="${MYSQL_PASSWORD:-}" mysql -h "$MYSQL_HOST" -P "$MYSQL_PORT" -u "$MYSQL_USER" -e "SHOW DATABASES;" -s 2>/dev/null | grep -v -E "Database|information_schema|performance_schema|sys")
 
     for db in $dbs; do
         local file="${BACKUP_DIR}/${db}_${TIMESTAMP}.sql"
         log "Backing up MySQL: $db"
-        mysqldump -h "$MYSQL_HOST" -P "$MYSQL_PORT" -u "$MYSQL_USER" "$db" > "$file"
+        MYSQL_PWD="${MYSQL_PASSWORD:-}" mysqldump -h "$MYSQL_HOST" -P "$MYSQL_PORT" -u "$MYSQL_USER" "$db" > "$file"
         [[ "$COMPRESS" == true ]] && gzip "$file"
         log "  → ${file}.gz"
     done
