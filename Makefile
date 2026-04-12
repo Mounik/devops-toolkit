@@ -1,4 +1,4 @@
-.PHONY: install lint test syntax-check shellcheck yamllint ansible-lint molecule molecule-test help
+.PHONY: install lint test syntax-check shellcheck yamllint ansible-lint molecule molecule-test pre-commit-install help
 
 ANSIBLE_DIRS    = ansible/
 SCRIPTS_DIR     = scripts/
@@ -9,6 +9,9 @@ help: ## Show this help
 
 install: ## Install Ansible collections
 	ansible-galaxy collection install -r $(COLLECTIONS)
+
+pre-commit-install: ## Install pre-commit hooks
+	pre-commit install
 
 lint: shellcheck yamllint ansible-lint ## Run all linters
 

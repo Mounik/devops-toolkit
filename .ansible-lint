@@ -1,0 +1,11 @@
+---
+exclude_paths:
+  - molecule/
+  - .git/
+warn_list:
+  - name[casing]
+  - var-naming[no-role-prefix]
+  - latest[git]
+skip_list:
+  - yaml[axis-align]
+offline: true

@@ -4,3 +4,5 @@
 *.sql.gz
 *.tar.gz
 inventory.ini
+.molecule/
+.cache/
