@@ -1,7 +1,5 @@
 # Docker Compose Template — Best Practices
 
-version: "3.8"
-
 services:
   app:
     image: app:latest

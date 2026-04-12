@@ -7,7 +7,7 @@
   hosts: all
   become: true
   vars_files:
-    - defaults/main.yml
+    - "{{ playbook_dir }}/defaults/main.yml"
   tasks:
     - name: Include SSH hardening
       ansible.builtin.include_tasks: tasks/ssh.yml

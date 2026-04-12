@@ -8,11 +8,13 @@ set -euo pipefail
 FORMAT="${1:-text}"
 REPORT=""
 
+REPORT_DATA=()
+
 collect() {
     local label=$1
     local value=$2
     if [[ "$FORMAT" == "json" ]]; then
-        REPORT+="\"$label\": \"$value\",\n"
+        REPORT_DATA+=("\"$label\": \"$value\"")
     else
         printf "%-30s %s\n" "$label:" "$value"
     fi
@@ -34,7 +36,6 @@ collect "OS" "$(cat /etc/os-release 2>/dev/null | grep PRETTY_NAME | cut -d'"' -
 # CPU
 collect "CPU Model" "$(grep 'model name' /proc/cpuinfo | head -1 | cut -d: -f2 | xargs)"
 collect "CPU Cores" "$(nproc)"
-local cpu_usage
 cpu_usage=$(top -bn1 | grep "Cpu(s)" | awk '{print $2}')%
 collect "CPU Usage" "$cpu_usage"
 collect "Load Average" "$(cat /proc/loadavg | awk '{print $1, $2, $3}')"
@@ -80,7 +81,7 @@ collect "Last Login" "$(last -1 -w 2>/dev/null | head -1 || echo 'n/a')"
 
 # Reboot needed?
 if [[ -f /var/run/reboot-required ]]; then
-    collect "Reboot Required" "YES ⚠️"
+    collect "Reboot Required" "YES"
 else
     collect "Reboot Required" "no"
 fi
@@ -91,7 +92,17 @@ if command -v apt &>/dev/null; then
     collect "Security Updates" "$(apt list --upgradable 2>/dev/null | grep -ci security || echo 0)"
 fi
 
-if [[ "$FORMAT" != "json" ]]; then
+if [[ "$FORMAT" == "json" ]]; then
+    echo "{"
+    for i in "${!REPORT_DATA[@]}"; do
+        if [[ $i -eq $((${#REPORT_DATA[@]} - 1)) ]]; then
+            echo "  ${REPORT_DATA[$i]}"
+        else
+            echo "  ${REPORT_DATA[$i]},"
+        fi
+    done
+    echo "}"
+else
     echo ""
     echo "========================================="
 fi
