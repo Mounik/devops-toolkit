@@ -1,0 +1,30 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ playbook_dir }}/../../defaults/main.yml"
+  vars:
+    deploy_ssh_keys: []
+    deploy_user: deploy
+  tasks:
+    - name: Include SSH hardening
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/../../tasks/ssh.yml"
+
+    - name: Include firewall setup
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/../../tasks/firewall.yml"
+
+    - name: Include sysctl hardening
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/../../tasks/sysctl.yml"
+
+    - name: Include auditd setup
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/../../tasks/auditd.yml"
+
+    - name: Include fail2ban setup
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/../../tasks/fail2ban.yml"
+
+    - name: Include automatic updates
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/../../tasks/auto-updates.yml"
+
+    - name: Include user management
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/../../tasks/users.yml"

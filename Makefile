@@ -1,4 +1,4 @@
-.PHONY: install lint test syntax-check shellcheck yamllint ansible-lint help
+.PHONY: install lint test syntax-check shellcheck yamllint ansible-lint molecule molecule-test help
 
 ANSIBLE_DIRS    = ansible/
 SCRIPTS_DIR     = scripts/
@@ -28,3 +28,9 @@ syntax-check: ## Ansible playbook syntax check
 	done
 
 test: lint syntax-check ## Run all checks
+
+molecule: ## Run Molecule tests (default: hardening)
+	cd ansible/hardening && molecule test
+
+molecule-test: ## Run Molecule test for a specific playbook (usage: make molecule-test PLAYBOOK=backup)
+	cd ansible/$(or $(PLAYBOOK),hardening) && molecule test
