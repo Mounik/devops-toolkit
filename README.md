@@ -1,4 +1,5 @@
 # 🛠️ DevOps Toolkit
+![CI](https://github.com/Mounik/devops-toolkit/actions/workflows/ci.yml/badge.svg)
 
 **Production-ready Ansible playbooks, shell scripts, and CI/CD pipelines** for Linux server hardening, Docker management, monitoring, and automation.
 
