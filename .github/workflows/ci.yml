@@ -1,12 +1,17 @@
-name: CI & Security Scan
+---
+name: "CI & Security Scan"
 
-on:
+"on":
   push:
     branches: [main]
   pull_request:
     branches: [main]
   schedule:
-    - cron: '0 6 * * 1' # Weekly security scan
+    - cron: '0 6 * * 1'  # Weekly security scan
+
+permissions:
+  contents: read
+  security-events: write
 
 env:
   DOCKER_BUILDKIT: 1
@@ -47,7 +52,7 @@ jobs:
           python-version: "3.13"
       - run: pip install yamllint
       - name: Run yamllint
-        run: yamllint -s ansible/ ci/ docker/ || exit 1
+        run: yamllint -s .github/workflows/ ansible/ ci/ docker/ || exit 1
 
   hadolint:
     name: 🐳 Dockerfile Lint
