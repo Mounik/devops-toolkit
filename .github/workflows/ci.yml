@@ -93,7 +93,7 @@ jobs:
         with:
           python-version: "3.13"
       - run: |
-          pip install molecule[docker] ansible-core
+          pip install molecule molecule-plugins[docker] ansible-core
           ansible-galaxy collection install -r requirements.yml
       - name: Run Molecule
         working-directory: ansible/hardening
