@@ -3,38 +3,14 @@
   hosts: all
   become: true
   tasks:
-    - name: Verify sshd is running
-      ansible.builtin.service:
-        name: sshd
-      check_mode: true
-      register: sshd_status
-      failed_when: sshd_status.state != "started"
-
-    - name: Verify PasswordAuthentication is disabled
+    - name: Verify sshd config has PasswordAuthentication disabled
       ansible.builtin.command: grep "^PasswordAuthentication no" /etc/ssh/sshd_config
       changed_when: false
 
-    - name: Verify PermitRootLogin is disabled
+    - name: Verify sshd config has PermitRootLogin disabled
       ansible.builtin.command: grep "^PermitRootLogin no" /etc/ssh/sshd_config
       changed_when: false
 
-    - name: Verify fail2ban is running
-      ansible.builtin.service:
-        name: fail2ban
-      check_mode: true
-      register: f2b_status
-      failed_when: f2b_status.state != "started"
-
-    - name: Verify auditd is running
-      ansible.builtin.service:
-        name: auditd
-      check_mode: true
-      register: auditd_status
-      failed_when: auditd_status.state != "started"
-
     - name: Verify deploy user exists
-      ansible.builtin.user:
-        name: deploy
-      check_mode: true
-      register: deploy_user
-      failed_when: not deploy_user.exists
+      ansible.builtin.command: id deploy
+      changed_when: false

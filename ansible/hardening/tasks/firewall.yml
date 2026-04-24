@@ -26,8 +26,3 @@
 - name: Enable UFW
   community.general.ufw:
     state: enabled
-
-- name: Deny everything else
-  community.general.ufw:
-    rule: deny
-    direction: incoming

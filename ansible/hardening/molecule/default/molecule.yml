@@ -16,9 +16,25 @@ platforms:
     privileged: true
 provisioner:
   name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: "{{ lookup('env', 'ANSIBLE_ROLES_PATH') | default('../..', true) }}"
   playbooks:
     converge: converge.yml
   options:
     v: true
+  config_options:
+    defaults:
+      callback_whitelist: default
 verifier:
   name: ansible
+
+scenario:
+  test_sequence:
+    - dependency
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - verify
+    - destroy
