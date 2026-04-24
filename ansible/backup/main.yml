@@ -53,11 +53,12 @@
     - name: Initialize restic repository
       ansible.builtin.command:
         cmd: "restic init --repo {{ restic_repo }}"
-        environment:
-          RESTIC_PASSWORD_FILE: /etc/restic/password
+      environment:
+        RESTIC_PASSWORD_FILE: "/etc/restic/password"
       register: restic_init
-      failed_when: restic_init.rc not in [0, 1]
       changed_when: restic_init.rc == 0
+      failed_when: restic_init.rc not in [0, 1]
+      no_log: true
 
     - name: Schedule backup cron
       ansible.builtin.cron:

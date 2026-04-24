@@ -34,16 +34,16 @@ apt install -y curl wget git vim htop tmux unzip jq ca-certificates gnupg
 if ! id "$DEPLOY_USER" &>/dev/null; then
     log "Creating user: $DEPLOY_USER"
     useradd -m -s /bin/bash -G sudo "$DEPLOY_USER"
-    mkdir -p /home/$DEPLOY_USER/.ssh
-    chmod 700 /home/$DEPLOY_USER/.ssh
+    mkdir -p /home/"$DEPLOY_USER"/.ssh
+    chmod 700 /home/"$DEPLOY_USER"/.ssh
 fi
 
 # 3. Add SSH key if provided
 if [[ -n "$SSH_KEY" ]]; then
     log "Adding SSH key for $DEPLOY_USER"
-    echo "$SSH_KEY" >> /home/$DEPLOY_USER/.ssh/authorized_keys
-    chmod 600 /home/$DEPLOY_USER/.ssh/authorized_keys
-    chown -R $DEPLOY_USER:$DEPLOY_USER /home/$DEPLOY_USER/.ssh
+    echo "$SSH_KEY" >> /home/"$DEPLOY_USER"/.ssh/authorized_keys
+    chmod 600 /home/"$DEPLOY_USER"/.ssh/authorized_keys
+    chown -R "$DEPLOY_USER":"$DEPLOY_USER" /home/"$DEPLOY_USER"/.ssh
 fi
 
 # 4. Harden SSH
@@ -79,8 +79,13 @@ systemctl start fail2ban
 # 7. Install Docker
 log "Installing Docker..."
 install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/$(. /etc/os-release && echo $ID)/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$(. /etc/os-release && echo $ID) $(. /etc/os-release && echo $VERSION_CODENAME) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+# shellcheck source=/dev/null
+OS_ID=$(. /etc/os-release && echo "$ID")
+# shellcheck source=/dev/null
+OS_CODENAME=$(. /etc/os-release && echo "$VERSION_CODENAME")
+ARCH=$(dpkg --print-architecture)
+curl -fsSL "https://download.docker.com/linux/${OS_ID}/gpg" | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo "deb [arch=${ARCH} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/${OS_ID} ${OS_CODENAME} stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 apt update
 apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 usermod -aG docker "$DEPLOY_USER"

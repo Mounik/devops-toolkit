@@ -6,7 +6,6 @@
 set -euo pipefail
 
 FORMAT="${1:-text}"
-REPORT=""
 
 REPORT_DATA=()
 
