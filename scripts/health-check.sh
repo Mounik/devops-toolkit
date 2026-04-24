@@ -30,14 +30,14 @@ fi
 collect "Hostname" "$(hostname)"
 collect "Uptime" "$(uptime -p)"
 collect "Kernel" "$(uname -r)"
-collect "OS" "$(cat /etc/os-release 2>/dev/null | grep PRETTY_NAME | cut -d'"' -f2 || uname -s)"
+collect "OS" "$(grep PRETTY_NAME < /etc/os-release 2>/dev/null | cut -d'"' -f2 || uname -s)"
 
 # CPU
 collect "CPU Model" "$(grep 'model name' /proc/cpuinfo | head -1 | cut -d: -f2 | xargs)"
 collect "CPU Cores" "$(nproc)"
 cpu_usage=$(top -bn1 | grep "Cpu(s)" | awk '{print $2}')%
 collect "CPU Usage" "$cpu_usage"
-collect "Load Average" "$(cat /proc/loadavg | awk '{print $1, $2, $3}')"
+collect "Load Average" "$(awk '{print $1, $2, $3}' /proc/loadavg)"
 
 # Memory
 collect "Total RAM" "$(free -h | awk '/Mem:/ {print $2}')"
