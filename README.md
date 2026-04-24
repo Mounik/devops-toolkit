@@ -15,6 +15,8 @@
 
 ## 📐 Architecture Overview
 
+![Architecture Diagram](./docs/architecture-diagram.png)
+
 ```mermaid
 flowchart TB
     subgraph Cloud["☁️ Cloud AWS"]
