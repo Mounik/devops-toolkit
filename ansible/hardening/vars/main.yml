@@ -1,3 +1,4 @@
+---
 # SSH Hardening Variables
 sshd_config:
   - key: PermitRootLogin

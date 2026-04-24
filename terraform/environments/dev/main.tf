@@ -35,10 +35,10 @@ provider "aws" {
 }
 
 module "vpc" {
-  source               = "../../modules/vpc"
-  region               = var.region
-  vpc_cidr             = "10.0.0.0/16"
-  availability_zones   = ["eu-west-1a", "eu-west-1b"]
+  source             = "../../modules/vpc"
+  region             = var.region
+  vpc_cidr           = "10.0.0.0/16"
+  availability_zones = ["eu-west-1a", "eu-west-1b"]
 }
 
 module "compute" {

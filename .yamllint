@@ -1,0 +1,50 @@
+---
+# Yamllint config — DevOps Toolkit
+# Relaxed enough for real-world manifests, strict enough for CI
+
+rules:
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+  brackets:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+  colons:
+    max-spaces-before: 0
+    max-spaces-after: 1
+  commas:
+    max-spaces-before: 0
+    min-spaces-after: 1
+  comments:
+    min-spaces-from-content: 1
+  comments-indentation: disable
+  document-end: disable
+  document-start:
+    present: true
+  empty-lines:
+    max: 2
+  empty-values: disable
+  indentation:
+    spaces: 2
+    indent-sequences: true
+    check-multi-line-strings: false
+  key-duplicates: enable
+  key-ordering: disable
+  line-length:
+    max: 120
+    allow-non-breakable-words: true
+    allow-non-breakable-inline-mappings: true
+  new-line-at-end-of-file: enable
+  new-lines:
+    type: unix
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
+  quoted-strings: disable
+  trailing-spaces: enable
+  truthy:
+    check-keys: true
+    allowed-values: ['true', 'false', 'on']
+
+ignore: |
+  kubernetes/helm/**/templates/

@@ -1,3 +1,4 @@
+---
 # GitLab CI — Lint & Test for Shell, Ansible, and YAML
 
 stages:

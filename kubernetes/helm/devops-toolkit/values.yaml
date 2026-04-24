@@ -1,3 +1,4 @@
+---
 # Default values — override per environment in values-*.yaml
 
 replicaCount: 2
