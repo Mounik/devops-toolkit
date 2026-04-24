@@ -12,8 +12,9 @@
   notify: Reload auditd rules
 
 - name: Reload auditd rules
-  ansible.builtin.command: kill -USR1 $(cat /var/run/auditd.pid)
+  ansible.builtin.shell: kill -USR1 "$(cat /var/run/auditd.pid)"
   changed_when: true
+  failed_when: false
 
 - name: Restart fail2ban
   ansible.builtin.service:

@@ -3,51 +3,10 @@
   hosts: all
   become: true
   vars_files:
-    - "{{ playbook_dir }}/../../defaults/main.yml"
-    - "{{ playbook_dir }}/../../vars/main.yml"
+    - ../../defaults/main.yml
+    - ../../vars/main.yml
   vars:
     deploy_ssh_keys: []
     deploy_user: deploy
-  handlers:
-    - name: Restart sshd
-      ansible.builtin.service:
-        name: sshd
-        state: restarted
-
-    - name: Restart auditd
-      ansible.builtin.command: augenrules
-      changed_when: true
-      notify: Reload auditd rules
-
-    - name: Reload auditd rules
-      ansible.builtin.command: "kill -USR1 $(cat /var/run/auditd.pid)"
-      changed_when: true
-
-    - name: Restart fail2ban
-      ansible.builtin.service:
-        name: fail2ban
-        state: restarted
-
-    - name: Restart unattended-upgrades
-      ansible.builtin.service:
-        name: unattended-upgrades
-        state: restarted
-
-  tasks:
-    - name: Include SSH hardening
-      ansible.builtin.include_tasks: "{{ playbook_dir }}/../../tasks/ssh.yml"
-
-    - name: Include firewall setup
-      ansible.builtin.include_tasks: "{{ playbook_dir }}/../../tasks/firewall.yml"
-
-    - name: Include sysctl hardening
-      ansible.builtin.include_tasks: "{{ playbook_dir }}/../../tasks/sysctl.yml"
-
-    - name: Include fail2ban setup
-      ansible.builtin.include_tasks: "{{ playbook_dir }}/../../tasks/fail2ban.yml"
-
-    - name: Include automatic updates
-      ansible.builtin.include_tasks: "{{ playbook_dir }}/../../tasks/auto-updates.yml"
-
-    - name: Include user management
-      ansible.builtin.include_tasks: "{{ playbook_dir }}/../../tasks/users.yml"
+  roles:
+    - name: hardening

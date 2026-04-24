@@ -17,7 +17,7 @@ platforms:
 provisioner:
   name: ansible
   env:
-    ANSIBLE_ROLES_PATH: "{{ lookup('env', 'ANSIBLE_ROLES_PATH') | default('../..', true) }}"
+    ANSIBLE_ROLES_PATH: "../.."
   playbooks:
     converge: converge.yml
   options:

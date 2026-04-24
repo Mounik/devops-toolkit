@@ -22,3 +22,4 @@
     name: auditd
     state: started
     enabled: true
+  when: ansible_virtualization_type | default('') not in ['docker', 'container']

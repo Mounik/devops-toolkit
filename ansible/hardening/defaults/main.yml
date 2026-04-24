@@ -12,6 +12,22 @@ ssh_client_alive_interval: 300
 ssh_client_alive_count_max: 2
 ssh_allow_users: []
 
+# SSH crypto suites (split for readability & linting)
+ssh_kex_algorithms: >-
+  curve25519-sha256,
+  curve25519-sha256@libssh.org,
+  diffie-hellman-group16-sha512,
+  diffie-hellman-group18-sha512
+ssh_ciphers: >-
+  chacha20-poly1305@openssh.com,
+  aes256-gcm@openssh.com,
+  aes128-gcm@openssh.com
+ssh_macs: >-
+  hmac-sha2-512-etm@openssh.com,
+  hmac-sha2-256-etm@openssh.com,
+  hmac-sha2-512,
+  hmac-sha2-256
+
 # Firewall
 firewall_allowed_ports:
   - "22"     # SSH
