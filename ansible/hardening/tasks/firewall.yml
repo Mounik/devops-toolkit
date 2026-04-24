@@ -8,12 +8,12 @@
 
 - name: Set default incoming policy
   community.general.ufw:
-    policy: "{{ ufw_default_incoming }}"
+    default: deny
     direction: incoming
 
 - name: Set default outgoing policy
   community.general.ufw:
-    policy: "{{ ufw_default_outgoing }}"
+    default: allow
     direction: outgoing
 
 - name: Allow configured ports
